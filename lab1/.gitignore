@@ -1,3 +1,2 @@
 main
-out_file.txt
-in_file.txt
+*.txt
