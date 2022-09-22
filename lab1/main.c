@@ -11,22 +11,29 @@ void search();
 void sort_queue();
 void reverse();
 int priority_queue();
-void pq_insert();
-void pq_delete();
 int circular_queue();
 void cq_insert();
 void cq_delete();
 void cq_display();
+void enqueue_pr();
+void dequeue_pr();
+void display_pr();
+int peek();
 
 int queue_array[MAX];
 int rear = - 1;
 int front = - 1;
+
+int pqVal[MAX];
+int pqPriority[MAX];
+int idx = -1;
 
 int main(){
     int choice;
     //menu
     while (1){
         printf("\n");
+#define MAX 7
         printf("------------------MAIN MENU--------------------------------\n");
         printf("-----------------------------------------------------------\n");
         printf("1.Insert element to queue (queue) \n");
@@ -61,15 +68,14 @@ int main(){
         printf("\n");
     }
 }
-
 void insert(){
     int item;
     if(rear == MAX - 1)
         printf("Queue Overflow \n");
     else{
-        if(front== - 1)
+        if(front== - 1 || rear)
             front = 0;
-            printf("Inset the element in queue : ");
+            printf("Insert the element in queue : ");
             scanf("%d", &item);
             rear = rear + 1;
             queue_array[rear] = item;
@@ -117,7 +123,6 @@ void load_file(){
     }
     fclose(in_file);
 }
-
 void save_file() {
     int i;
     FILE *out_file  = fopen("out_file.txt", "w");
@@ -133,7 +138,6 @@ void save_file() {
 
     fclose(out_file);
 }
-
 void search() {
     int s_el;
     int found = 0;
@@ -186,40 +190,94 @@ void reverse() {
         printf("The queue has been reversed\n");
     }
 }
-int priority_queue(){
-    int choice;
+ int priority_queue(){
+   int choice;
 
     while (1){
         printf("\n");
-        printf("------------PRIORITY QUEUE MENU----------------------------\n");
-        printf("-----------------------------------------------------------\n");
+       printf("---------PRIORITY QUEUE MENU-------------------\n");
+        printf("-----------------------------------------------\n");
         printf("1.Insert element to priority queue (queue) \n");
         printf("2.Delete element from priority queue (dequeue) \n");
         printf("3.Display all elements \n");
-        printf("4.Create the priority queue \n");
-        printf("0.Return to main menu \n");
-        printf("Enter your choice : ");
+        printf("4.Show the element with the highest priority \n");
+        printf("0.Go to main menu \n");
+        printf("Enter your choice, please : ");
 
         scanf("%d", &choice);
 
-        switch(choice){
-        case 1: pq_insert(); break;
-        case 2: pq_delete(); break;
-        case 3: display(); break;
-        case 4: sort_queue(); break;
+       switch(choice){
+        case 1: enqueue_pr(); break;
+        case 2: dequeue_pr(); break;
+        case 3: display_pr(); break;
+        case 4: printf("Element with the highest priority is "); peek(); break;
         case 0: main();
-        default: printf("Wrong choice \n");
+        default: printf("Wrong choice. Try one of the options available. \n");
         }
         printf("\n");
     }
 }
-void pq_insert(){
-    insert();
-    sort_queue();
+// Insert the element in maintaining items in sorted order of their priority
+void enqueue_pr()
+{
+    if(!(idx == MAX - 1)){
+        int data, priority;
+        int tempVal, tempPr, i, j;
+        printf("Insert the element in priority queue (nr and priority separated by space): ");
+        scanf("%d %d", &data, &priority);
+        // first item being entered
+        if(idx == -1){
+            idx++; // increase the index
+            pqVal[idx] = data;
+            pqPriority[idx] = priority;
+            return;
+        }
+        else{
+             // Increase the index
+            idx++;
+            pqVal[idx] = data;
+            pqPriority[idx] = priority;
+
+            for(i = 0; i <= idx; i++)    
+            {    
+                for(j = i+1; j <= idx; j++)    
+                    {    
+                        if(pqPriority[j] < pqPriority[i])    
+                        {    
+                            tempPr = pqPriority[i];
+                            tempVal = pqVal[i];   
+
+                            pqPriority[i] = pqPriority[j];  
+                            pqVal[i] = pqVal[j];  
+
+                            pqPriority[j] = tempPr;     
+                            pqVal[j] = tempVal;
+                        }     
+                    }     
+            }     
+            
+        }
+
+    }
 }
-void pq_delete(){
-    delete();
+void dequeue_pr()
+{
+        printf("The deleted element :");
+        peek();
+        idx--;
 }
+void display_pr(){
+    if (idx == -1)
+        {printf("Queue is empty.");}
+    for (int i = 0; i <= idx; i++) {
+        printf("(%d, %d)\n",pqVal[i], pqPriority[i]);
+    } 
+}
+int peek()
+{
+    printf("(%d, %d)\n",pqVal[idx], pqPriority[idx]);
+}
+
 int circular_queue(){
     int choice;
 
@@ -230,7 +288,6 @@ int circular_queue(){
         printf("1.Insert element to circular queue (queue) \n");
         printf("2.Delete element from circular queue (dequeue) \n");
         printf("3.Display all elements \n");
-        printf("4.Create the circular queue \n");
         printf("0.Return to main menu \n");
         printf("Enter your choice : ");
 
@@ -240,7 +297,6 @@ int circular_queue(){
         case 1: cq_insert(); break;
         case 2: cq_delete(); break;
         case 3: cq_display(); break;
-        // case 4: sort_queue(); break;
         case 0: main();
         default: printf("Wrong choice \n");
         }
