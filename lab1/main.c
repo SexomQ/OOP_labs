@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX 7
 
 void insert();
 void delete();
@@ -20,20 +19,20 @@ void dequeue_pr();
 void display_pr();
 int peek();
 
-int queue_array[MAX];
+int queue_array[];
 int rear = - 1;
 int front = - 1;
 
-int pqVal[MAX];
-int pqPriority[MAX];
-int idx = -1;
+char pqVal[];
+int pqPriority[];
+int st = -1;
+int fin = -1;
 
 int main(){
     int choice;
     //menu
     while (1){
         printf("\n");
-#define MAX 7
         printf("------------------MAIN MENU--------------------------------\n");
         printf("-----------------------------------------------------------\n");
         printf("1.Insert element to queue (queue) \n");
@@ -70,16 +69,12 @@ int main(){
 }
 void insert(){
     int item;
-    if(rear == MAX - 1)
-        printf("Queue Overflow \n");
-    else{
-        if(front== - 1 || rear)
-            front = 0;
-            printf("Insert the element in queue : ");
-            scanf("%d", &item);
-            rear = rear + 1;
-            queue_array[rear] = item;
-    }
+    if(front== - 1 || rear)
+        front = 0;
+    printf("Insert the element in queue : ");
+    scanf("%d", &item);
+    rear = rear + 1;
+    queue_array[rear] = item;
 }
 void delete(){
     if(front == - 1 || front > rear){
@@ -131,9 +126,8 @@ void save_file() {
     if(front == - 1)
         printf("Queue is empty \n");
     else{
-        for (i = front; i != rear; i = (i + 1) % MAX)
+        for (i = front; i <= rear; i++)
             fprintf(out_file, "%d ", queue_array[i]);
-        fprintf(out_file, "%d ", queue_array[i]);
     }
 
     fclose(out_file);
@@ -190,12 +184,12 @@ void reverse() {
         printf("The queue has been reversed\n");
     }
 }
- int priority_queue(){
+int priority_queue(){
    int choice;
 
     while (1){
         printf("\n");
-       printf("---------PRIORITY QUEUE MENU-------------------\n");
+        printf("---------PRIORITY QUEUE MENU-------------------\n");
         printf("-----------------------------------------------\n");
         printf("1.Insert element to priority queue (queue) \n");
         printf("2.Delete element from priority queue (dequeue) \n");
@@ -211,73 +205,71 @@ void reverse() {
         case 2: dequeue_pr(); break;
         case 3: display_pr(); break;
         case 4: printf("Element with the highest priority is "); peek(); break;
-        case 0: main();
-        default: printf("Wrong choice. Try one of the options available. \n");
+        case 0: main(); break;
+        default: printf("Wrong choice. \n");
         }
         printf("\n");
     }
 }
-// Insert the element in maintaining items in sorted order of their priority
+
 void enqueue_pr()
 {
-    if(!(idx == MAX - 1)){
-        int data, priority;
-        int tempVal, tempPr, i, j;
-        printf("Insert the element in priority queue (nr and priority separated by space): ");
-        scanf("%d %d", &data, &priority);
-        // first item being entered
-        if(idx == -1){
-            idx++; // increase the index
-            pqVal[idx] = data;
-            pqPriority[idx] = priority;
-            return;
-        }
-        else{
-             // Increase the index
-            idx++;
-            pqVal[idx] = data;
-            pqPriority[idx] = priority;
+    int priority = 0;
+    char data = 'a';
+    
+    int tempVal, tempPr, i, j;
+    printf("Choose the element:");
+    scanf("\n%c %d", &data, &priority);
 
-            for(i = 0; i <= idx; i++)    
-            {    
-                for(j = i+1; j <= idx; j++)    
-                    {    
-                        if(pqPriority[j] < pqPriority[i])    
-                        {    
-                            tempPr = pqPriority[i];
-                            tempVal = pqVal[i];   
-
-                            pqPriority[i] = pqPriority[j];  
-                            pqVal[i] = pqVal[j];  
-
-                            pqPriority[j] = tempPr;     
-                            pqVal[j] = tempVal;
-                        }     
-                    }     
-            }     
-            
-        }
-
+    if(st == -1){
+        st++;
+        fin++;
+        pqVal[fin] = data;
+        pqPriority[fin] = priority;
+        printf("--%d, %d--", st, fin);
     }
+    else{
+        fin++;
+        pqVal[fin] = data;
+        pqPriority[fin] = priority;
+        printf("---%d, %d---", st, fin);
+    }
+
+    for(i = st; i <= fin; i++)    
+    {    
+        for(j = i+1; j <= fin; j++)    
+        {    
+            if(pqPriority[j] < pqPriority[i])    
+            {    
+                tempPr = pqPriority[i];
+                tempVal = pqVal[i];   
+
+                pqPriority[i] = pqPriority[j];  
+                pqVal[i] = pqVal[j];  
+
+                pqPriority[j] = tempPr;     
+                pqVal[j] = tempVal;
+            }     
+        }     
+    }           
 }
 void dequeue_pr()
 {
         printf("The deleted element :");
         peek();
-        idx--;
+        fin--;
 }
 void display_pr(){
-    if (idx == -1)
-        {printf("Queue is empty.");}
-    for (int i = 0; i <= idx; i++) {
-        printf("(%d, %d)\n",pqVal[i], pqPriority[i]);
+    for (int i = 0; i <= fin; i++) {
+        printf("(%c %d)\n",pqVal[i], pqPriority[i]);
     } 
 }
 int peek()
 {
-    printf("(%d, %d)\n",pqVal[idx], pqPriority[idx]);
+    printf("(%c, %d)\n",pqVal[fin], pqPriority[fin]);
 }
 
+#define MAX 7
 int circular_queue(){
     int choice;
 
