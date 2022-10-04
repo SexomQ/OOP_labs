@@ -1,4 +1,6 @@
-I decided to create the Black Jack game in java.
+I decided to create the Black Jack game in java. This idea came 
+while thinking about what to do. I didn't manage to make a game in 
+the previous lab because of lack of time, so I decided to create one now.
 
 This game contains 10 classes and 13 objects.
 
@@ -15,7 +17,7 @@ Classes:
 -TheFlash
 
 Objects:
--players
+-player1/player2/player3
 -table
 -dog
 -cat
