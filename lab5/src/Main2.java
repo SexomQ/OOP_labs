@@ -1,17 +1,16 @@
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.*;
+import java.lang.Thread;
+import java.io.*;
 
 public class Main2 {
-    public static void main(String[] args) {
-        President president = new President();
-        president.setCountry("Moldova");
-        president.setName("Maia Sandu");
-
+    public static void main(String[] args) throws InterruptedException {
                 tableMenu();
     }
 
-    public static void tableMenu(){
+    public static void tableMenu() throws InterruptedException {
         String userChoice;
         Scanner choice = new Scanner(System.in);
         while (true) {
@@ -39,10 +38,16 @@ public class Main2 {
         }
     }
 
-    public static void StartGame() {
+    public static void StartGame() throws InterruptedException {
         String name;
         List<String> hand;
         boolean play = true;
+
+        //initialize the president
+        President president = new President();
+        president.setCountry("Moldova");
+        president.setName("Maia Sandu");
+        president.setFee(5);
 
         //initialize table
         Table table = new Table();
@@ -78,45 +83,16 @@ public class Main2 {
         table.setNoPlayers(userChoice);
 
         Player player1 = new Player();
-        Player player2 = new Player();
-        Player player3 = new Player();
 
         if (userChoice == 1) {
-            player1.setBalance(500);
+            player1.setBalance(1000);
             System.out.println("Player1 name: ");
             name = nameInput.nextLine();
             player1.setName(name);
 
-        } else if (userChoice == 2) {
-            player1.setBalance(500);
-            System.out.println("Player1 name: ");
-            name = nameInput.nextLine();
-            player1.setName(name);
-
-            player2.setBalance(500);
-            System.out.println("Player2 name: ");
-            name = nameInput.nextLine();
-            player2.setName(name);
-
-        } else if (userChoice == 3) {
-            player1.setBalance(500);
-            System.out.println("Player1 name: ");
-            name = nameInput.nextLine();
-            player1.setName(name);
-
-            player2.setBalance(500);
-            System.out.println("Player2 name: ");
-            name = nameInput.nextLine();
-            player2.setName(name);
-
-            player3.setBalance(500);
-            System.out.println("Player3 name: ");
-            name = nameInput.nextLine();
-            player3.setName(name);
-        } else {
-            System.out.println("Not possible at the moment.");
-            System.out.println("The max number of players will be extended in the next update");
         }
+
+        //------------------------- some poo code here ---------------------------
 
         //initiate dealer
         Dealer dealer = new Dealer();
@@ -124,6 +100,7 @@ public class Main2 {
         //play round
         int noRound = 1;
         while (play) {
+            boolean credit = false;
             //create a new deck of cards
             table.setShuffledDeck();
 
@@ -137,7 +114,7 @@ public class Main2 {
 
                 //take fees
                 if (noRound % 3 == 0) {
-                    player1.setBalance(player1.payFee());
+                    player1.setBalance(player1.payFee(president.getFee()));
                     System.out.println("---The players paid the tax---");
                 }
 
@@ -149,13 +126,19 @@ public class Main2 {
                 System.out.println(player1.getName() + "'s turn");
                 System.out.println("");
 
+                Random rando = new Random();
+                int numRand = rando.nextInt(4);
+
+                boolean cont = true;
+                int count = 0;
                 String menuChoice = "1";
-                while (menuChoice.equals("1") || menuChoice.equals("2") || menuChoice.equals("3") || menuChoice.equals("4") || menuChoice.equals("5")) {
+                while ((menuChoice.equals("1") || menuChoice.equals("2") || menuChoice.equals("3") || menuChoice.equals("4") || menuChoice.equals("5")) && (cont == true )){
                     System.out.println(player1.getName() + "'s cards: " + player1.getHand());
                     System.out.println(player1.getName() + "'s balance: " + player1.getBalance());
                     System.out.println("");
-
-                    menuChoice = playerMenu();
+                    if (player1.totalPoints(player1.getHand()) >= 19 && player1.totalPoints(player1.getHand()) <= 21) {break;}
+                    System.out.println(player1.totalPoints(player1.getHand()));
+                    menuChoice = playerMenu(player1.totalPoints(player1.getHand()), table.getShuffledDeck());
 
                     if (menuChoice.equals("1")) {
                         String drawCard;
@@ -164,22 +147,24 @@ public class Main2 {
                         table.deleteCard();
 
                         player1.addCard(drawCard);
+                        System.out.println("The player has drawn a card");
 
                     } else if (menuChoice.equals("2")) {
                         //ask Barry Alen for help
                         barry.setCard(table.lastCard());
                         System.out.println(barry.getCard());
 
-                        player1.setBalance(player1.getBalance() - 100);
-                        bank.setMoney(bank.payService(100));
+                        player1.setBalance(player1.getBalance() - 17);
+                        bank.setMoney(bank.payService(17));
+                        System.out.println("The player has asked Barry Alen to check the last card in the deck");
                     } else if (menuChoice.equals("3")) {
                         //help from dog
-                        Scanner card = new Scanner(System.in);
-                        String willedCard;
-                        willedCard = card.nextLine();
-
                         Random randomNumber = new Random();
                         int theRandomNumber;
+
+                        theRandomNumber = randomNumber.nextInt(52);
+                        String willedCard;
+                        willedCard = table.getDeck().get(theRandomNumber);
 
                         theRandomNumber = randomNumber.nextInt(2);
 
@@ -190,8 +175,9 @@ public class Main2 {
                             player1.addCard("bark");
                         }
 
-                        player1.setBalance(player1.getBalance() - 100);
-                        bank.setMoney(bank.payService(100));
+                        player1.setBalance(player1.getBalance() - 17);
+                        bank.setMoney(bank.payService(17));
+                        System.out.println("The player has asked the dog to bring " + willedCard + " .");
                     } else if (menuChoice.equals("4")) {
                         //help from cat
                         System.out.println("Cat has run over the deck");
@@ -199,18 +185,21 @@ public class Main2 {
                         cat.setDeck(table.getShuffledDeck());
                         table.changeShuffledDeck(cat.shuffleCatDeck());
 
-                        player1.setBalance(player1.getBalance() - 25);
-                        bank.setMoney(bank.payService(25));
-                    } else if (menuChoice.equals("5")) {
+                        player1.setBalance(player1.getBalance() - 10);
+                        bank.setMoney(bank.payService(10));
+                        System.out.println("The player has chosen the help from the cat.");
+                    } else if (menuChoice.equals("5") && (player1.getHand().size() != 0)) {
                         //help from magician
                         System.out.println("Focus Pocus...");
 
                         magician.setDeck(player1.getHand());
                         player1.setHand(magician.deleteCard());
 
-                        player1.setBalance(player1.getBalance() - 50);
-                        bank.setMoney(bank.payService(50));
+                        player1.setBalance(player1.getBalance() - 30);
+                        bank.setMoney(bank.payService(30));
+                        System.out.println("The player has chosen the help from the magician.");
                     }
+
                 }
 
                 //compute points
@@ -236,32 +225,70 @@ public class Main2 {
 
                 if (playerOnePoints == dealerPoints && dealerPoints <= 21) {
                     player1.setBalance(player1.drawRound());
+                    System.out.println("The game is even.");
                 } else if (playerOnePoints > dealerPoints && playerOnePoints <= 21) {
                     player1.setBalance(player1.winRound());
                     System.out.println(player1.getName() + " won !!!");
                 } else if (playerOnePoints < dealerPoints && dealerPoints > 21) {
                     player1.setBalance(player1.winRound());
                     System.out.println(player1.getName() + " won !!!");
+                } else {
+                    System.out.println(player1.getName() + " lost!");
                 }
 
+                noRound++;
+                Thread.sleep(2000);
+
+                if (player1.getBalance() <= 100){
+                    int randomNum = rando.nextInt(2);
+
+                    if (randomNum == 0 && !credit){
+                        System.out.println(player1.getName() + "has decided to borrow 500$ from the bank");
+                        bank.setMoney(bank.getMoney()-500);
+                        player1.setBalance(player1.getBalance()+500);
+                        credit = true;
+                    }
+                    else {
+                        System.out.println(player1.getName() + " has decided to stop here.");
+                        play = false;
+                    }
+                }
+
+                if (noRound % 500 == 0){
+                    president.setFee(president.getFee()+5);
+                    System.out.println("The president has decided to rise the taxes by 5$");
+                }
+
+                if (player1.getBalance() >= 800 && credit){
+                    System.out.println(player1.getName() + " The player has paid 600$ back to the bank");
+                    player1.setBalance(player1.getBalance() - 600);
+                    credit = false;
+                }
 
             }
         }
     }
-    public static String playerMenu () {
-        Scanner choice = new Scanner(System.in);
+    public static String playerMenu (int points, List<String> deck) {
         String menuChoice;
+        Random random = new Random();
+        int bonus = random.nextInt(2);
 
-        while (true) {
-            System.out.println("________________Player Menu_____________");
-            System.out.println("1. Add one card");
-            System.out.println("2. Ask Barry Alen to check the next card in deck for you [100$]");
-            System.out.println("3. Help from a dog (brings you the card you need with probability 50%) [100$]");
-            System.out.println("4. Help from a cat (shuffles the deck for you) [25$]");
-            System.out.println("5. Help from magician (make last card in hand disapear) [50$]");
-            System.out.println("0. Pass");
-
+        if (points < 17){
+            menuChoice = "1";
+        } else if (points > 21) {
+            menuChoice = "5";
+        } else if (points >= 17 && points <= 21 && bonus == 0) {
+            int randNum = random.nextInt(3);
+            if (randNum == 0) {
+                menuChoice = "2";
+            } else if (randNum == 1) {
+                menuChoice = "3";
+            } else {
+                menuChoice = "4";
+            }
+        } else {
+            menuChoice = "0";
         }
+        return menuChoice;
     }
-
 }

@@ -15,6 +15,10 @@ public class Table implements InitialGame{
         return noPlayers;
     }
 
+    public List<String> getDeck() {
+        return deck;
+    }
+
     //shuffle the deck
     public void setShuffledDeck() {
         Random rand = new Random();

@@ -1,7 +1,8 @@
 public class President implements Test{
     private String country;
     private String name;
-    public String status = "in development";
+    private int fee;
+    public String status = "test";
 
     public String getStatus() {
         return status;
@@ -21,5 +22,12 @@ public class President implements Test{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getFee() {
+        return fee;
+    }
+    public void setFee(int fee) {
+        this.fee = fee;
     }
 }

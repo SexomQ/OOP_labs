@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Player implements GameActors{
@@ -62,8 +63,8 @@ public class Player implements GameActors{
         return balance;
     }
 
-    public int payFee(){
-        balance = balance - 50;
+    public int payFee(int fee){
+        balance = balance - fee;
         return balance;
     }
 
@@ -97,25 +98,13 @@ public class Player implements GameActors{
         else if (value == 'Q' || value == '1' || value == 'K' || value == 'J'){
             return 10;
         }
-        else if (value == 'A'){
-            Scanner choice = new Scanner(System.in);
-            int ace;
-            ace = 0;
-            while (ace != 1 || ace != 11) {
-                System.out.println("Choose the points for Ace [1 or 11]: ");
-                ace = choice.nextInt();
-
-                if (ace == 1) {
-                    return ace;
-                } else if (ace == 11) {
-                    return ace;
-                } else {
-                    System.out.println("Not a valid value");
-                }
-            }
-            return ace;
+        else{
+//            Random rand = new Random();
+//            int random = rand.nextInt(2);
+//            if (random == 0){return 11;}
+//            else {return 1;}
+            return 11;
         }
-        else {return 0;}
     }
 
     public int totalPoints(List<String> playerHand){
